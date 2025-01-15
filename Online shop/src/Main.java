@@ -1,3 +1,4 @@
+import java.util.ArrayList;
 import java.util.Scanner;
 
 public class Main {
@@ -19,10 +20,65 @@ public class Main {
         int[] clothingCart = new int[clothing.length];
         int[] booksCart = new int[books.length];
 
+        ArrayList<String> orderHistory = new ArrayList<>();
+        ArrayList<Boolean> orderShippedStatus = new ArrayList<>();
+
         Scanner scanner = new Scanner(System.in);
         boolean running = true;
+        boolean adminAsked = false;
 
         while (running) {
+            if (!adminAsked) {
+                System.out.print("Are you an admin? (yes/no): ");
+                String isAdmin = scanner.next();
+                if (isAdmin.equalsIgnoreCase("yes")) {
+                    System.out.print("Enter admin password (password is 123): ");
+                    String password = scanner.next();
+                    if (!password.equals("123")) {
+                        System.out.println("Incorrect password. Returning to main menu.");
+                        continue;
+                    } else {
+                        System.out.println("Welcome, Admin!");
+                        // Admin-specific functionality
+                        boolean adminRunning = true;
+                        while (adminRunning) {
+                            System.out.println("\nAdmin Menu:");
+                            System.out.println("1. View Orders");
+                            System.out.println("2. Mark Order as Shipped");
+                            System.out.println("3. Exit Admin Menu");
+                            System.out.print("Choose an option: ");
+                            int adminChoice = scanner.nextInt();
+
+                            if (adminChoice == 1) {
+                                System.out.println("\nOrder History:");
+                                if (orderHistory.isEmpty()) {
+                                    System.out.println("No orders have been made.");
+                                } else {
+                                    for (int i = 0; i < orderHistory.size(); i++) {
+                                        System.out.println((i + 1) + ". " + orderHistory.get(i) + " - " + (orderShippedStatus.get(i) ? "Shipped" : "Not Shipped"));
+                                    }
+                                }
+                            } else if (adminChoice == 2) {
+                                System.out.print("Enter the order number to mark as shipped: ");
+                                int orderNumber = scanner.nextInt() - 1;
+                                if (orderNumber >= 0 && orderNumber < orderHistory.size()) {
+                                    orderShippedStatus.set(orderNumber, true);
+                                    System.out.println("Order " + (orderNumber + 1) + " marked as shipped.");
+                                } else {
+                                    System.out.println("Invalid order number.");
+                                }
+                            } else if (adminChoice == 3) {
+                                adminRunning = false;
+                            } else {
+                                System.out.println("Invalid option. Please try again.");
+                            }
+                        }
+                        continue;
+                    }
+                }
+                adminAsked = true;
+            }
+
             System.out.println("\nWelcome to the Basic Online Shop!");
             System.out.println("1. Browse Product Categories");
             System.out.println("2. View Cart");
@@ -222,33 +278,36 @@ public class Main {
             } else if (choice == 5) {
                 System.out.println("\nCheckout:");
                 double total = 0;
+                StringBuilder orderSummary = new StringBuilder("Order Summary:\n");
                 for (int i = 0; i < electronicsCart.length; i++) {
                     if (electronicsCart[i] > 0) {
                         double itemTotal = electronicsPrices[i] * electronicsCart[i];
                         total += itemTotal;
-                        System.out.printf("%s x%d - $%.2f%n", electronics[i], electronicsCart[i], itemTotal);
+                        orderSummary.append(String.format("%s x%d - $%.2f%n", electronics[i], electronicsCart[i], itemTotal));
                     }
                 }
                 for (int i = 0; i < clothingCart.length; i++) {
                     if (clothingCart[i] > 0) {
                         double itemTotal = clothingPrices[i] * clothingCart[i];
                         total += itemTotal;
-                        System.out.printf("%s x%d - $%.2f%n", clothing[i], clothingCart[i], itemTotal);
+                        orderSummary.append(String.format("%s x%d - $%.2f%n", clothing[i], clothingCart[i], itemTotal));
                     }
                 }
                 for (int i = 0; i < booksCart.length; i++) {
                     if (booksCart[i] > 0) {
                         double itemTotal = booksPrices[i] * booksCart[i];
                         total += itemTotal;
-                        System.out.printf("%s x%d - $%.2f%n", books[i], booksCart[i], itemTotal);
+                        orderSummary.append(String.format("%s x%d - $%.2f%n", books[i], booksCart[i], itemTotal));
                     }
                 }
-                System.out.printf("Total: $%.2f%n", total);
+                orderSummary.append(String.format("Total: $%.2f%n", total));
 
                 System.out.print("Do you want to confirm the order? (yes/no): ");
                 String confirm = scanner.next();
                 if (confirm.equalsIgnoreCase("yes")) {
                     System.out.println("Thank you for your purchase!");
+                    orderHistory.add(orderSummary.toString());
+                    orderShippedStatus.add(false);
                     for (int i = 0; i < electronicsCart.length; i++) {
                         electronicsCart[i] = 0;
                     }
@@ -258,6 +317,7 @@ public class Main {
                     for (int i = 0; i < booksCart.length; i++) {
                         booksCart[i] = 0;
                     }
+                    adminAsked = false; 
                 } else {
                     System.out.println("Order not confirmed. Returning to main menu.");
                 }
