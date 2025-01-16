@@ -39,7 +39,6 @@ public class Main {
                         continue;
                     } else {
                         System.out.println("Welcome, Admin!");
-                        // Admin-specific functionality
                         boolean adminRunning = true;
                         while (adminRunning) {
                             System.out.println("\nAdmin Menu:");
@@ -100,7 +99,7 @@ public class Main {
                 if (categoryChoice == 0) {
                     System.out.println("\nElectronics:");
                     for (int i = 0; i < electronics.length; i++) {
-                        System.out.println((i + 1) + ". " + electronics[i] + " - $" + electronicsPrices[i] + " - " + (electronicsStock[i] > 0 ? "In Stock" : "Out of Stock"));
+                        System.out.println((i + 1) + ". " + electronics[i] + " - $" + electronicsPrices[i] + " - " + (electronicsStock[i] > 0 ? "In Stock (" + electronicsStock[i] + ")" : "Out of Stock"));
                     }
                     System.out.print("Select a product to add to cart or 0 to go back: ");
                     int productChoice = scanner.nextInt() - 1;
@@ -124,7 +123,7 @@ public class Main {
                 } else if (categoryChoice == 1) {
                     System.out.println("\nClothing:");
                     for (int i = 0; i < clothing.length; i++) {
-                        System.out.println((i + 1) + ". " + clothing[i] + " - $" + clothingPrices[i] + " - " + (clothingStock[i] > 0 ? "In Stock" : "Out of Stock"));
+                        System.out.println((i + 1) + ". " + clothing[i] + " - $" + clothingPrices[i] + " - " + (clothingStock[i] > 0 ? "In Stock (" + clothingStock[i] + ")" : "Out of Stock"));
                     }
                     System.out.print("Select a product to add to cart or 0 to go back: ");
                     int productChoice = scanner.nextInt() - 1;
@@ -148,7 +147,7 @@ public class Main {
                 } else if (categoryChoice == 2) {
                     System.out.println("\nBooks:");
                     for (int i = 0; i < books.length; i++) {
-                        System.out.println((i + 1) + ". " + books[i] + " - $" + booksPrices[i] + " - " + (booksStock[i] > 0 ? "In Stock" : "Out of Stock"));
+                        System.out.println((i + 1) + ". " + books[i] + " - $" + booksPrices[i] + " - " + (booksStock[i] > 0 ? "In Stock (" + booksStock[i] + ")" : "Out of Stock"));
                     }
                     System.out.print("Select a product to add to cart or 0 to go back: ");
                     int productChoice = scanner.nextInt() - 1;
@@ -303,6 +302,7 @@ public class Main {
                 orderSummary.append(String.format("Total: $%.2f%n", total));
 
                 System.out.print("Do you want to confirm the order? (yes/no): ");
+                System.out.println(orderSummary);
                 String confirm = scanner.next();
                 if (confirm.equalsIgnoreCase("yes")) {
                     System.out.println("Thank you for your purchase!");
