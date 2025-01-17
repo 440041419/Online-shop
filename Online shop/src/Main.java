@@ -195,49 +195,82 @@ public class Main {
                 if (isEmpty) {
                     System.out.println("Your cart is empty.");
                 }
-            } else if (choice == 3) {
-                System.out.println("\nUpdate Cart:");
-                System.out.println("Select a category to update (1. Electronics, 2. Clothing, 3. Books): ");
-                int categoryChoice = scanner.nextInt() - 1;
+            }  else if (choice == 3) {
+                    System.out.println("\nUpdate Cart:");
 
-                String[] selectedProducts;
-                int[] selectedCart;
-                int[] selectedStock;
+                    ArrayList<String> cartItems = new ArrayList<>();
+                    ArrayList<Integer> cartQuantities = new ArrayList<>();
+                    ArrayList<Double> cartPrices = new ArrayList<>();
+                    ArrayList<int[]> cartStocks = new ArrayList<>();
 
-                if (categoryChoice == 0) {
-                    selectedProducts = electronics;
-                    selectedCart = electronicsCart;
-                    selectedStock = electronicsStock;
-                } else if (categoryChoice == 1) {
-                    selectedProducts = clothing;
-                    selectedCart = clothingCart;
-                    selectedStock = clothingStock;
-                } else if (categoryChoice == 2) {
-                    selectedProducts = books;
-                    selectedCart = booksCart;
-                    selectedStock = booksStock;
-                } else {
-                    System.out.println("Invalid category. Please try again.");
-                    continue;
-                }
-
-                System.out.print("Select a product to update quantity or 0 to go back: ");
-                int productChoice = scanner.nextInt() - 1;
-
-                if (productChoice >= 0 && productChoice < selectedProducts.length && selectedCart[productChoice] > 0) {
-                    System.out.print("Enter new quantity: ");
-                    int newQuantity = scanner.nextInt();
-
-                    if (newQuantity >= 0 && newQuantity <= selectedCart[productChoice] + selectedStock[productChoice]) {
-                        selectedStock[productChoice] += selectedCart[productChoice] - newQuantity;
-                        selectedCart[productChoice] = newQuantity;
-                        System.out.println("Updated cart: " + selectedProducts[productChoice] + " x" + newQuantity);
-                    } else {
-                        System.out.println("Invalid quantity. Please try again.");
+                    for (int i = 0; i < electronicsCart.length; i++) {
+                        if (electronicsCart[i] > 0) {
+                            cartItems.add(electronics[i]);
+                            cartQuantities.add(electronicsCart[i]);
+                            cartPrices.add(electronicsPrices[i]);
+                            cartStocks.add(new int[]{electronicsCart[i], electronicsStock[i]});
+                        }
                     }
-                } else {
-                    System.out.println("Invalid product choice or product not in cart. Please try again.");
-                }
+                    for (int i = 0; i < clothingCart.length; i++) {
+                        if (clothingCart[i] > 0) {
+                            cartItems.add(clothing[i]);
+                            cartQuantities.add(clothingCart[i]);
+                            cartPrices.add(clothingPrices[i]);
+                            cartStocks.add(new int[]{clothingCart[i], clothingStock[i]});
+                        }
+                    }
+                    for (int i = 0; i < booksCart.length; i++) {
+                        if (booksCart[i] > 0) {
+                            cartItems.add(books[i]);
+                            cartQuantities.add(booksCart[i]);
+                            cartPrices.add(booksPrices[i]);
+                            cartStocks.add(new int[]{booksCart[i], booksStock[i]});
+                        }
+                    }
+
+                    if (cartItems.isEmpty()) {
+                        System.out.println("Your cart is empty. Nothing to update.");
+                        continue;
+                    }
+
+                    for (int i = 0; i < cartItems.size(); i++) {
+                        System.out.printf("%d. %s - Quantity: %d, Price per item: $%.2f%n", (i + 1), cartItems.get(i), cartQuantities.get(i), cartPrices.get(i));
+                    }
+                    System.out.print("Select an item to update (or 0 to go back): ");
+                    int itemChoice = scanner.nextInt() - 1;
+
+                    if (itemChoice >= 0 && itemChoice < cartItems.size()) {
+                        System.out.print("Enter new quantity (0 to remove): ");
+                        int newQuantity = scanner.nextInt();
+
+                        int[] stockInfo = cartStocks.get(itemChoice);
+                        int currentQuantity = stockInfo[0];
+                        int stockAvailable = stockInfo[1];
+
+                        if (newQuantity >= 0 && newQuantity <= currentQuantity + stockAvailable) {
+                            int quantityDifference = newQuantity - currentQuantity;
+                            stockInfo[1] -= quantityDifference;
+
+                            if (cartItems.get(itemChoice).equals(electronics[itemChoice])) {
+                                electronicsCart[itemChoice] = newQuantity;
+                                electronicsStock[itemChoice] += quantityDifference;
+                            } else if (cartItems.get(itemChoice).equals(clothing[itemChoice])) {
+                                clothingCart[itemChoice] = newQuantity;
+                                clothingStock[itemChoice] += quantityDifference;
+                            } else if (cartItems.get(itemChoice).equals(books[itemChoice])) {
+                                booksCart[itemChoice] = newQuantity;
+                                booksStock[itemChoice] += quantityDifference;
+                            }
+
+                            System.out.println("Updated cart: " + cartItems.get(itemChoice) + " x" + newQuantity);
+                        } else {
+                            System.out.println("Invalid quantity. Please try again.");
+                        }
+                    } else {
+                        System.out.println("Invalid choice. Returning to main menu.");
+                    }
+
+
             } else if (choice == 4) {
                 System.out.println("\nRemove from Cart:");
                 System.out.println("Select a category to remove from (1. Electronics, 2. Clothing, 3. Books): ");
